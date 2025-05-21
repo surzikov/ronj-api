@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API_RONJ</title>
+    <title>Главная</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -11,30 +11,36 @@
 <body>
     <div x-data="{
         categories: [],
-
+        token: localStorage.getItem('token'),
+        isLogin: localStorage.getItem('token') != undefined,
         host: 'https://test.informat74.ru/api',
 
         async downloadCategories() {
             let response = await fetch(`${this.host}/categories`)
             this.categories = await response.json()
             this.categories = this.categories.data
+        },
+        exit(){
+
+            localStorage.removeItem('token')
+            window.location.href = 'index.html'
         }
     }">
         <header class="flex bg-gray-700 text-white py-2 px-[10%]">
-            <a href="" class="w-1/4 text-orange-300">Apipost</a>
+            <a class="w-1/4 text-orange-300">Apipost</a>
             <nav class="w-2/4 flex gap-x-4">
                 <a href="" class="hover:text-orange-300">Posts</a>
                 <a href="" class="hover:text-orange-300">AdminPanel</a>
             </nav>
             <ul class="w-1/4 flex gap-x-4 justify-end" >
-                <li>
-                    <a href="" class="hover:text-orange-300">Regist</a>
+                <li x-show="!isLogin">
+                    <a href="pages/signup.html" class="hover:text-orange-300">Sign Up</a>
                 </li>
-                <li>
-                    <a href="" class="hover:text-orange-300">Login</a>
+                <li x-show="!isLogin">
+                    <a href="pages/login.html" class="hover:text-orange-300">Login</a>
                 </li>
-                <li>
-                    <a href="" class="hover:text-orange-300">Exit</a>
+                <li x-show="isLogin">
+                    <a class="hover:text-orange-300" x-on:click="exit()">Exit</a>
                 </li>
             </ul>
         </header>
@@ -49,7 +55,7 @@
                         async addCategory() {
                             let response = await fetch(`${this.host}/categories`, {
                             method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {'Content-Type': 'application/json', Authorization: `Bearer ${this.token}`},
                             body: JSON.stringify({
                                 name: this.category
                             })
@@ -86,7 +92,8 @@
 
                     async deleteCategory(id) {
                         fetch(`${this.host}/categories/${id}`, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${this.token}`},
                     })
                     setTimeout(this.downloadCategories(), 1000)
                     this.downloadCategories()},
@@ -94,7 +101,7 @@
                     async updateCategory(id, newname) {
                         let response = await fetch(`${this.host}/categories/${id}`, {
                         method: 'PUT',
-                        headers: {'Content-Type': 'application/json'},
+                        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${this.token}`},
                         body: JSON.stringify({
                             name: newname
                         })
