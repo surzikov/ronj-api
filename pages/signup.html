@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+</head>
+<body>
+    <div x-data="{
+        token: localStorage.getItem('token'),
+        isLogin: !(this.token == undefined),
+        host: 'https://test.informat74.ru/api'
+    }">
+        <header class="flex bg-gray-700 text-white py-2 px-[10%]">
+            <a href="../index.html" class="w-1/4 text-orange-300">Apipost</a>
+            <nav class="w-2/4 flex gap-x-4">
+                <a href="" class="hover:text-orange-300">Posts</a>
+                <a href="" class="hover:text-orange-300">AdminPanel</a>
+            </nav>
+            <ul class="w-1/4 flex gap-x-4 justify-end" >
+                <li x-show="!isLogin">
+                    <a class="hover:text-orange-300">Sign Up</a>
+                </li>
+                <li x-show="!isLogin">
+                    <a href="login.html" class="hover:text-orange-300">Login</a>
+                </li>
+                <li x-show="isLogin">
+                    <a class="hover:text-orange-300" x-on:click="exit()">Exit</a>
+                </li>
+            </ul>
+        </header>
+        <main>
+            <section class="py-6 px-[10%] grid gap-y-4" x-data="{
+                name: '',
+                email: '',
+                password: '',
+                avatar: '',
+                async signUp(){
+                    let response = await fetch(`${this.host}/register`, {
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: this.name,
+                            email: this.email,
+                            password: this.password
+                        })
+                    })
+                    let result = await response.json()
+                    console.log(result)
+                    if(response.ok == true){
+                        localStorage.setItem('token', result.token) 
+                        window.location.href = '../index.html'
+                    }
+                }
+            }">
+                
+                    <h2 class="text-2xl font-bold">Sign Up</h2>
+                    <form class="grid grid-cols-1"
+                    x-on:submit.prevent="signUp()">
+                    <div class="grid">
+                        <label for="name" class="">Name</label><input type="text" class="border p-2 grid grid" id="name" x-model="name">
+                    </div>
+                    <div class="grid">
+                        <label for="email" class="">Email</label><input type="email" class="border p-2 grid grid" id="email" x-model="email">
+                    </div>
+                    <div class="grid">
+                        <label for="password" class="">Password</label><input type="password" class="border p-2 grid grid" id="password" x-model="password">
+                    </div>
+                    <div class="grid">
+                        <label for="avatar" class="">Avatar</label><input type="file" class="border p-2 grid grid" id="avatar" x-model="avatar">
+                    </div><br>
+                        <button class="bg-gray-700 p-2 text-white hover:text-orange-400">Sign Up</button>
+                    </form>
+                
+                
+            </section>
+        </main>
+        <footer></footer>
+    </div>
+    
+</body>
+</html>
